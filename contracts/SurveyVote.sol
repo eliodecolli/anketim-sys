@@ -1,3 +1,6 @@
+// Surveys are not implemented yet!
+
+
 pragma solidity 0.5.0;
 
 contract SurveyVote{

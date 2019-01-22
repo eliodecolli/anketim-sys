@@ -15,22 +15,22 @@ contract Poll{
     address private owner;
     AStorage    private papa;
 
-    int256 private id;
+    uint256 private id;
 
     string private description;
 
     uint private startDate;
     uint private endDate;
 
-    mapping(address => uint32) private votes_peers;   // Keep track of each address who can vote.
+    mapping(address => uint256) private votes_peers;   // Keep track of each address who can vote.
 
     mapping(address => bool) private voted_peers;   // Don't allow douple votes!
 
-    mapping(uint32 => bool) private opts;     // Check-up dictionary for alternatives.
-    mapping(uint32 => string) private opts_id;     // Each alternative.
+    mapping(uint256 => bool) private opts;     // Check-up dictionary for alternatives.
+    mapping(uint256 => string) private opts_id;     // Each alternative.
 
-    mapping(uint32 => uint256) private Results;    // Poll result until now.
-    uint32[] private  Options;   // We gotta iterate through this unfortunately =/
+    mapping(uint256 => uint256) private Results;    // Poll result until now.
+    uint256[] private  Options;   // We gotta iterate through this unfortunately =/
 
 
     uint256 private a_len;
@@ -38,8 +38,7 @@ contract Poll{
     uint256 private total_voted;
 
 
-    constructor(string memory desc, uint32[] memory options, string[] memory opts_str, uint tot_days, int256 _id, address pAstorage) public{
-        require(options.length == opts_str.length);
+    constructor(string memory desc, string[] memory opts_str, uint tot_days, uint256 _id, address pAstorage) public{
         
         id = _id;
         owner = msg.sender;
@@ -49,19 +48,19 @@ contract Poll{
         startDate = now;
         endDate = now + tot_days;
 
-        for(uint256 i; i < options.length; i++){
-            opts[options[i]] = true;
-            opts_id[options[i]] = opts_str[i];
+        for(uint256 i; i < opts_str.length; i++){
+            opts[i] = true;
+            opts_id[i] = opts_str[i];
         }
 
         total_voted = 0;
     }
 
-    function IsOptionValid(uint32 opt) private view returns(bool){
+    function IsOptionValid(uint256 opt) private view returns(bool){
         return opts[opt];
     }
 
-    function Vote(uint32 alt, string memory peer_id) public {
+    function Vote(uint256 alt, string memory peer_id) public {
         require(msg.sender != owner, "Vetem nje student mund te votoj.");
         require(IsOptionValid(alt), "Alternativa eshte e gabuar.");
         require(papa.IsPeerAllowed(peer_id), "ID-a juaj nuk njihet ne rrjet si ID studenti.");
@@ -72,17 +71,17 @@ contract Poll{
         Results[alt]++;
     }
 
-    function GetAltsIds() public view returns(uint32[] memory){
+    function GetAltsIds() public view returns(uint256[] memory){
         return Options;
     }
 
-    function GetAltById(uint32 opt_id) public view returns(string memory){
-        require(opts[opt_id] == true, "Alternativa nuk eshte e sakte.");
+    function GetAlts(uint256 opt_id) public view returns(string memory){
+        require(opts[opt_id] == true, "Alternativa nuk ekziston.");
         return opts_id[opt_id];
     }
 
-    function GetResultForOpt(uint32 opt) public view returns(uint256){
-        require(opts[opt] == true, "Alternativa nuk eshte e sakte.");
+    function GetResultForOpt(uint256 opt) public view returns(uint256){
+        require(opts[opt] == true, "Alternativa nuk ekziston.");
         return Results[opt];
     }
 }
